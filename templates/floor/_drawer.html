@@ -18,13 +18,20 @@
       <dt>开灶</dt><dd class="mono">{{ open_run.openedAt|date:"Y-m-d H:i" }}</dd>
       <dt>目标软化点</dt><dd class="mono">{{ open_run.targetSoftPointC }} ℃</dd>
     </dl>
-    <form method="post" action="{% url 'close_run' hearth.pk %}"
-          hx-post="{% url 'close_run' hearth.pk %}"
-          hx-target="#hearth-drawer"
-          hx-swap="innerHTML">
-      {% csrf_token %}
-      <button type="submit" class="btn-ghost">收灶回冷灶</button>
-    </form>
+    <div class="btn-row">
+      <form method="post" action="{% url 'close_run' hearth.pk %}"
+            hx-post="{% url 'close_run' hearth.pk %}"
+            hx-target="#hearth-drawer"
+            hx-swap="innerHTML">
+        {% csrf_token %}
+        <button type="submit" class="btn-ghost">收灶回冷灶</button>
+      </form>
+      <form method="post" action="{% url 'run_delete' open_run.pk %}"
+            onsubmit="return confirm('确认删除该值守？其下探针将一并清除。');">
+        {% csrf_token %}
+        <button type="submit" class="btn-danger-ghost">删除值守</button>
+      </form>
+    </div>
   </section>
 
   <section class="drawer-block">
@@ -35,6 +42,11 @@
         <span class="mono temp">{{ p.softPointC }}℃</span>
         <span class="when">{{ p.sampledAt|date:"m-d H:i" }}</span>
         <span class="who">{{ p.samplerName }}</span>
+        <form method="post" action="{% url 'probe_delete' p.pk %}" class="probe-del"
+              onsubmit="return confirm('确认删除该探针记录？');">
+          {% csrf_token %}
+          <button type="submit" class="btn-x" title="删除探针">✕</button>
+        </form>
       </li>
       {% empty %}
       <li class="empty">尚无探针 — 出胶前须有 ≤95℃ 记录</li>
@@ -81,6 +93,20 @@
       {% csrf_token %}
       {{ phase_form.as_p }}
       <button type="submit" class="btn-ember">改相位</button>
+    </form>
+  </section>
+
+  <section class="drawer-block danger-zone">
+    <h3>删除灶台</h3>
+    {% if hearth_delete_note %}
+    <p class="hint delete-note">{{ hearth_delete_note }}</p>
+    {% else %}
+    <p class="hint">删除后其下值守与探针一并清除，不可恢复。</p>
+    {% endif %}
+    <form method="post" action="{% url 'hearth_delete' hearth.pk %}"
+          onsubmit="return confirm('确认删除灶台 {{ hearth.tag|escapejs }}？其下值守与探针将一并清除。');">
+      {% csrf_token %}
+      <button type="submit" class="btn-danger" {% if hearth_delete_note %}disabled{% endif %}>删除灶台</button>
     </form>
   </section>
 </div>

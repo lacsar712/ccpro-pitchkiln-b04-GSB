@@ -17,19 +17,35 @@
     <button type="submit" class="btn-ember">写入来脂批</button>
   </form>
 
-  <ol class="lot-feed">
-    {% for lot in lots %}
-    <li class="lot-card">
-      <div class="lot-code mono">{{ lot.lotCode }}</div>
-      <div class="lot-place">{{ lot.originPlace }}</div>
-      <div class="lot-meta">
-        <span class="mono">{{ lot.arrivalKg }} kg</span>
-        <span>{{ lot.receivedAt|date:"Y-m-d H:i" }}</span>
-      </div>
-    </li>
-    {% empty %}
-    <li class="lot-card empty">暂无来脂批</li>
-    {% endfor %}
-  </ol>
+  <section class="lot-stream">
+    <p class="stream-count">共 {{ lots|length }} 张</p>
+    <ol class="lot-feed">
+      {% for lot in lots %}
+      <li class="lot-card">
+        <div class="lot-main">
+          <div class="lot-code mono">{{ lot.lotCode }}</div>
+          <div class="lot-place">{{ lot.originPlace }}</div>
+          <div class="lot-meta">
+            <span class="mono">{{ lot.arrivalKg }} kg</span>
+            <span>{{ lot.receivedAt|date:"Y-m-d H:i" }}</span>
+          </div>
+        </div>
+        <div class="lot-side">
+          {% if lot.delete_note %}
+          <p class="delete-note">{{ lot.delete_note }}</p>
+          {% endif %}
+          <form method="post"
+                action="{% url 'resin_lot_delete' lot.pk %}"
+                onsubmit="return confirm('确认删除来脂批 {{ lot.lotCode|escapejs }}？已收灶值守与探针将一并清除。');">
+            {% csrf_token %}
+            <button type="submit" class="btn-danger" {% if lot.delete_note %}disabled{% endif %}>删除</button>
+          </form>
+        </div>
+      </li>
+      {% empty %}
+      <li class="lot-card empty">暂无来脂批</li>
+      {% endfor %}
+    </ol>
+  </section>
 </div>
 {% endblock %}

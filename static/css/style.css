@@ -617,3 +617,111 @@ body {
   .feed-layout { grid-template-columns: 1fr; }
   .lane-row { grid-template-columns: 40px 1fr; }
 }
+
+/* —— 角色徽标 —— */
+.role-tag {
+  font-size: 0.62rem;
+  color: var(--cinder);
+  border: 1px solid #4a3a28;
+  padding: 0.1rem 0.3rem;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+/* —— 删除入口（删除权仅主管；值守工点击将被后端中文挡下） —— */
+.btn-danger {
+  background: transparent;
+  border: 1px solid var(--danger);
+  color: var(--danger);
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.btn-danger:hover:not(:disabled) { background: var(--danger); color: #fff; }
+
+.btn-danger:disabled {
+  border-color: #57534e;
+  color: #57534e;
+  cursor: not-allowed;
+}
+
+.btn-danger-ghost {
+  background: transparent;
+  border: 1px dashed var(--danger);
+  color: var(--danger);
+  padding: 0.4rem 0.65rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.btn-danger-ghost:hover { border-style: solid; }
+
+.btn-x {
+  background: transparent;
+  border: none;
+  color: #57534e;
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 0 0.2rem;
+  line-height: 1;
+}
+
+.btn-x:hover { color: var(--danger); }
+
+.btn-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.delete-note {
+  color: var(--danger);
+  font-size: 0.72rem;
+  margin: 0 0 0.35rem;
+}
+
+.danger-zone {
+  border-top: 1px dashed #4a2a2a;
+  padding-top: 0.75rem;
+}
+
+.probe-del {
+  grid-row: 1 / span 2;
+  grid-column: 3;
+  align-self: center;
+  margin: 0;
+}
+
+.probe-timeline li { grid-template-columns: 4.5rem 1fr auto; }
+
+/* —— 来脂批流：计数与卡片 —— */
+.stream-count {
+  margin: 0 0 0.5rem;
+  font-size: 0.78rem;
+  color: var(--steel);
+}
+
+.lot-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.lot-card .lot-main { flex: 1; min-width: 0; }
+
+.lot-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+  flex-shrink: 0;
+}
+
+.lot-side form { margin: 0; }
+
+.lot-side .delete-note { max-width: 12rem; text-align: right; }

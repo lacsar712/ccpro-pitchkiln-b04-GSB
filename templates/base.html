@@ -18,6 +18,7 @@
     </nav>
     <div class="strip-foot">
       <span class="who">{{ user.username }}</span>
+      <span class="role-tag" title="当前角色">{{ role_label }}</span>
       <form method="post" action="{% url 'logout' %}">
         {% csrf_token %}
         <button type="submit" class="ghost-exit">退</button>

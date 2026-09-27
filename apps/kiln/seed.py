@@ -1,13 +1,15 @@
 from decimal import Decimal
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.utils import timezone
 
 from .models import CookRun, FireHearth, ResinLot, SoftPointProbe
+from .services.deletion import SUPERVISOR_GROUP, WORKER_GROUP, ensure_role_groups
 
 
 def ensure_seed_data():
-    """幂等种子：账号 + 来脂批 / 灶台 / 值守 / 探针。"""
+    """幂等种子：账号 + 角色组 + 来脂批 / 灶台 / 值守 / 探针。"""
     User = get_user_model()
 
     if not User.objects.filter(username="admin").exists():
@@ -15,6 +17,15 @@ def ensure_seed_data():
 
     if not User.objects.filter(username="worker").exists():
         User.objects.create_user("worker", "worker@pitchkiln.local", "123456")
+
+    # 角色分流：admin=主管（可删），worker=值守工（可建可改不可删）
+    ensure_role_groups()
+    User.objects.get(username="admin").groups.add(
+        Group.objects.get(name=SUPERVISOR_GROUP)
+    )
+    User.objects.get(username="worker").groups.add(
+        Group.objects.get(name=WORKER_GROUP)
+    )
 
     if FireHearth.objects.exists():
         return
@@ -91,9 +102,10 @@ def ensure_seed_data():
         samplerName="值守周磊",
     )
 
+    # lot_a / lot_b 挂未收灶值守（删批应被拒），lot_c 无值守（可直接删）
     run2 = CookRun.objects.create(
         hearth=h2,
-        resinLot=lot_c,
+        resinLot=lot_b,
         openedAt=now - timezone.timedelta(hours=4),
         closedAt=None,
         targetSoftPointC=Decimal("90.00"),

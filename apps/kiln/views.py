@@ -9,7 +9,8 @@ from django.utils import timezone
 from django.views.decorators.http import require_http_methods, require_POST
 
 from .forms import OpenCookRunForm, PhaseChangeForm, ResinLotForm, SoftPointProbeForm
-from .models import CookRun, FireHearth, ResinLot
+from .models import CookRun, FireHearth, ResinLot, SoftPointProbe
+from .services.deletion import DeleteRefused, delete_block_reason, perform_delete
 from .services.floor_rules import change_hearth_phase
 
 
@@ -57,6 +58,8 @@ def _drawer_context(hearth):
         "phase_form": PhaseChangeForm(hearth=hearth),
         "probe_form": SoftPointProbeForm() if open_run else None,
         "open_run_form": OpenCookRunForm(hearth=hearth) if open_run is None else None,
+        # 与后端同一套守卫：模板据此禁用删灶按钮并展示理由
+        "hearth_delete_note": delete_block_reason(hearth),
     }
 
 
@@ -207,5 +210,58 @@ def resin_lot_feed(request):
             }
         )
 
-    lots = ResinLot.objects.all()[:40]
+    lots = list(ResinLot.objects.all()[:40])
+    for lot in lots:
+        # 与后端同一套守卫：卡片据此禁用删除并展示理由
+        lot.delete_note = delete_block_reason(lot)
     return render(request, "resin/feed.html", {"lots": lots, "form": form})
+
+
+def _delete_and_redirect(request, obj, fallback_url):
+    """四类删除共用的视图动作：统一走 perform_delete，中文提示。"""
+    try:
+        messages.success(request, perform_delete(request.user, obj))
+    except DeleteRefused as exc:
+        messages.error(request, str(exc))
+        return redirect(fallback_url)
+    return None
+
+
+@login_required
+@require_POST
+def resin_lot_delete(request, pk):
+    lot = get_object_or_404(ResinLot, pk=pk)
+    return _delete_and_redirect(request, lot, "resin_lot_feed") or redirect(
+        "resin_lot_feed"
+    )
+
+
+@login_required
+@require_POST
+def hearth_delete(request, pk):
+    hearth = get_object_or_404(FireHearth, pk=pk)
+    return _delete_and_redirect(request, hearth, f"/?hearth={pk}") or redirect("home")
+
+
+@login_required
+@require_POST
+def run_delete(request, pk):
+    run = get_object_or_404(
+        CookRun.objects.select_related("hearth"), pk=pk
+    )
+    hearth_pk = run.hearth_id
+    return _delete_and_redirect(request, run, f"/?hearth={hearth_pk}") or redirect(
+        f"/?hearth={hearth_pk}"
+    )
+
+
+@login_required
+@require_POST
+def probe_delete(request, pk):
+    probe = get_object_or_404(
+        SoftPointProbe.objects.select_related("run__hearth"), pk=pk
+    )
+    hearth_pk = probe.run.hearth_id
+    return _delete_and_redirect(request, probe, f"/?hearth={hearth_pk}") or redirect(
+        f"/?hearth={hearth_pk}"
+    )
