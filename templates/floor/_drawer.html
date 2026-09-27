@@ -1,4 +1,5 @@
 <div class="drawer-panel">
+  {% if partial_messages %}{% include "partials/_toasts.html" %}{% endif %}
   <header class="drawer-top">
     <div>
       <p class="drawer-kicker">过道 {{ hearth.lane }}</p>
@@ -25,6 +26,14 @@
       {% csrf_token %}
       <button type="submit" class="btn-ghost">收灶回冷灶</button>
     </form>
+    <form method="post" action="{% url 'delete_entity' 'cook-run' open_run.pk %}"
+          class="run-del"
+          hx-post="{% url 'delete_entity' 'cook-run' open_run.pk %}"
+          hx-target="#hearth-drawer"
+          hx-swap="innerHTML">
+      {% csrf_token %}
+      <button type="submit" class="btn-danger" title="删除该值守及其探针（仅主管）">删除该值守（仅主管）</button>
+    </form>
   </section>
 
   <section class="drawer-block">
@@ -35,6 +44,14 @@
         <span class="mono temp">{{ p.softPointC }}℃</span>
         <span class="when">{{ p.sampledAt|date:"m-d H:i" }}</span>
         <span class="who">{{ p.samplerName }}</span>
+        <form method="post" action="{% url 'delete_entity' 'probe' p.pk %}"
+              class="probe-del"
+              hx-post="{% url 'delete_entity' 'probe' p.pk %}"
+              hx-target="#hearth-drawer"
+              hx-swap="innerHTML">
+          {% csrf_token %}
+          <button type="submit" class="btn-danger btn-mini" title="删除该探针（仅主管）">删</button>
+        </form>
       </li>
       {% empty %}
       <li class="empty">尚无探针 — 出胶前须有 ≤95℃ 记录</li>
@@ -82,5 +99,22 @@
       {{ phase_form.as_p }}
       <button type="submit" class="btn-ember">改相位</button>
     </form>
+  </section>
+
+  <section class="drawer-block danger-zone">
+    <h3>删除灶台</h3>
+    {% if hearth_delete_block %}
+    <p class="hint">{{ hearth_delete_block }}</p>
+    <button type="button" class="btn-danger" disabled>删除灶台（仅主管）</button>
+    {% else %}
+    <p class="hint">仅主管可删；删除后其值守与探针一并清除，不可恢复。</p>
+    <form method="post" action="{% url 'delete_entity' 'hearth' hearth.pk %}"
+          hx-post="{% url 'delete_entity' 'hearth' hearth.pk %}"
+          hx-target="#hearth-drawer"
+          hx-swap="innerHTML">
+      {% csrf_token %}
+      <button type="submit" class="btn-danger">删除灶台（仅主管）</button>
+    </form>
+    {% endif %}
   </section>
 </div>

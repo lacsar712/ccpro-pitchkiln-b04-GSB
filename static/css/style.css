@@ -490,7 +490,7 @@ body {
   position: relative;
   padding: 0.35rem 0 0.55rem 0.85rem;
   display: grid;
-  grid-template-columns: 4.5rem 1fr;
+  grid-template-columns: 4.5rem 1fr auto;
   grid-template-rows: auto auto;
   column-gap: 0.5rem;
   font-size: 0.8rem;
@@ -519,6 +519,13 @@ body {
 .probe-timeline .when { color: var(--steel); font-size: 0.72rem; }
 .probe-timeline .who { font-size: 0.75rem; }
 
+.probe-del {
+  grid-column: 3;
+  grid-row: 1 / span 2;
+  align-self: center;
+  margin: 0;
+}
+
 .stack-form p {
   margin: 0 0 0.55rem;
   display: flex;
@@ -542,6 +549,35 @@ body {
 
 .btn-ghost:hover { border-color: var(--cinder); color: var(--ink); }
 
+/* —— 删除（仅主管，值守工点击一律中文挡下） —— */
+.btn-danger {
+  background: transparent;
+  border: 1px solid var(--danger);
+  color: #fca5a5;
+  padding: 0.4rem 0.65rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.16);
+  color: #fff;
+}
+
+.btn-danger:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-mini {
+  padding: 0.15rem 0.45rem;
+  font-size: 0.72rem;
+}
+
+.run-del { margin-top: 0.45rem; }
+
+.danger-zone h3 { color: #fca5a5; }
+
 /* —— resin feed —— */
 .feed-layout {
   display: grid;
@@ -559,6 +595,12 @@ body {
 .lot-intake h2 {
   margin: 0 0 0.75rem;
   font-size: 0.95rem;
+}
+
+.feed-count {
+  margin: 0 0 0.5rem;
+  font-size: 0.78rem;
+  color: var(--steel);
 }
 
 .lot-feed {
@@ -598,6 +640,13 @@ body {
   gap: 0.5rem;
   font-size: 0.75rem;
   color: var(--steel);
+}
+
+.lot-del {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.6rem;
+  margin: 0;
 }
 
 .back-link {

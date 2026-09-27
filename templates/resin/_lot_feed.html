@@ -1,0 +1,32 @@
+<div id="lot-feed-wrap">
+  {% if partial_messages %}{% include "partials/_toasts.html" %}{% endif %}
+  <p class="feed-count">本流共 {{ lots|length }} 批</p>
+  <ol class="lot-feed">
+    {% for lot in lots %}
+    <li class="lot-card">
+      <div class="lot-code mono">{{ lot.lotCode }}</div>
+      <div class="lot-place">{{ lot.originPlace }}</div>
+      <div class="lot-meta">
+        <span class="mono">{{ lot.arrivalKg }} kg</span>
+        <span>{{ lot.receivedAt|date:"Y-m-d H:i" }}</span>
+      </div>
+      <form method="post" action="{% url 'delete_entity' 'resin-lot' lot.pk %}"
+            class="lot-del"
+            hx-post="{% url 'delete_entity' 'resin-lot' lot.pk %}"
+            hx-target="#lot-feed-wrap"
+            hx-swap="outerHTML">
+        {% csrf_token %}
+        {% if lot.delete_block %}
+        <button type="submit" class="btn-danger btn-mini" disabled
+                title="{{ lot.delete_block }}">删</button>
+        {% else %}
+        <button type="submit" class="btn-danger btn-mini"
+                title="删除该来脂批（仅主管）">删</button>
+        {% endif %}
+      </form>
+    </li>
+    {% empty %}
+    <li class="lot-card empty">暂无来脂批</li>
+    {% endfor %}
+  </ol>
+</div>

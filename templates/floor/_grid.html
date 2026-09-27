@@ -33,3 +33,4 @@
   <p class="board-empty">暂无灶台，请先种子数据</p>
   {% endfor %}
 </div>
+{% if oob_legend %}{% include "floor/_phase_legend.html" with oob=True %}{% endif %}

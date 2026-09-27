@@ -21,6 +21,7 @@ def ensure_seed_data():
 
     now = timezone.now()
 
+    # 来脂批：2409A / 2409B 挂未收灶值守（演示删除被拒），2409C 无值守（演示可删）
     lot_a = ResinLot.objects.create(
         lotCode="脂-松脂坳-2409A",
         originPlace="松脂坳东沟",
@@ -93,7 +94,7 @@ def ensure_seed_data():
 
     run2 = CookRun.objects.create(
         hearth=h2,
-        resinLot=lot_c,
+        resinLot=lot_a,
         openedAt=now - timezone.timedelta(hours=4),
         closedAt=None,
         targetSoftPointC=Decimal("90.00"),

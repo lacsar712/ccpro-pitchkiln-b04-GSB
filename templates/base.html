@@ -27,13 +27,7 @@
   {% endif %}
 
   <div class="ops-main {% if not user.is_authenticated %}ops-main-solo{% endif %}">
-    {% if messages %}
-    <ul class="toast-rail">
-      {% for message in messages %}
-      <li class="toast {{ message.tags }}">{{ message }}</li>
-      {% endfor %}
-    </ul>
-    {% endif %}
+    {% include "partials/_toasts.html" %}
     {% block content %}{% endblock %}
   </div>
 </body>
